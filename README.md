@@ -1,3 +1,5 @@
+*Language : **English** [Français](README_fr.md)*
+
 # Stage Info
 CS internship at Centre Oscar Lambret - Department of Physics
 
