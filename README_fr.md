@@ -1,3 +1,5 @@
+*Langue : [English](README.md) **Français***
+
 # Stage Info
 Stage en Informatique au Centre Oscar Lambret - Service de Physique
 
