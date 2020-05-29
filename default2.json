@@ -1,0 +1,11 @@
+{
+  "params" : {
+    "files"       : ["bscan1.tif"],
+    "path"        : "etalonnageBig/",
+    "doses"       : [800, 500, 300, 250, 200, 150, 100, 0],
+    "weiner"      : false,
+    "grey"        : false,
+    "streaks"     : true,
+    "image_mode"  : ""
+  }
+}

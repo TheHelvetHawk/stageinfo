@@ -18,6 +18,14 @@ locates the areas of interest and creates a graphical view of each color channel
 Similar to EBT3_Calibration.ipynb but the curves are fitted (pretty much a V2.0 of the other file)
 
 
+## TestingBigTiffImage.ipynb
+Is used as a testing file for integrating the publication's method with big tiff images
 
-PS : For command-line usage of the programs, i can't know how it works at the moment due to technical issues. 
+
+## weightingProcessTest.ipynb
+Is used a a testing file for applying a weighted fit following the publication (not finished)
+
+
+
+PS : For command-line usage of the programs, i can't know how it works at the moment due to technical issues.
 Though you can use [JupyterLab](https://jupyter.org/try) to execute it

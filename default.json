@@ -6,6 +6,6 @@
     "weiner"      : false,
     "grey"        : false,
     "streaks"     : true,
-    "image_mode"  : "rs"
+    "image_mode"  : ""
   }
 }

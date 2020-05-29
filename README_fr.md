@@ -18,6 +18,14 @@ le même filtre), puis localise les zones d'interêt pour créer un graphique av
 Similaire à EBT3_Calibration.ipynb mais les courbes sont fittées (Version 2.0 de l'autre fichier)
 
 
+## TestingBigTiffImage.ipynb
+Est utilisé comme un brouillon/fichier de test pour appliquer la méthode de la publication et utilise des plus grandes images tiff
 
-PS : Pour utiliser la programmes via lignes de commandes, je ne sais pas encore comment ça marche du a des problèmes techniques. :confused: 
+
+## weightingProcessTest.ipynb
+est un brouillon pour appliquer un fit avec des facteurs de publication (pas fini)
+
+
+
+PS : Pour utiliser la programmes via lignes de commandes, je ne sais pas encore comment ça marche du a des problèmes techniques. :confused:
 Une solution est d'utliser [JupyterLab](https://jupyter.org/try) pour exécuter le code.
