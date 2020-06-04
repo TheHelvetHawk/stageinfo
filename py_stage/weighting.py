@@ -59,9 +59,10 @@ wsB = [e/sum(sumb) for e in sumb]
 
 # calcul des Wc pour chaque  canal et chaque bande
 n = variables["n_forWeights"]
-wcR = [(n*wsR[i]) + ((n-1)*wd[i]) for i in range(len(wd))]
-wcG = [(n*wsG[i]) + ((n-1)*wd[i]) for i in range(len(wd))]
-wcB = [(n*wsB[i]) + ((n-1)*wd[i]) for i in range(len(wd))]
+#wc =  n * wd    + (n-1) * ws
+wcR = [(n*wd[i]) + ((n-1)*wsR[i]) for i in range(len(wd))]
+wcG = [(n*wd[i]) + ((n-1)*wsG[i]) for i in range(len(wd))]
+wcB = [(n*wd[i]) + ((n-1)*wsB[i]) for i in range(len(wd))]
 
 # valeurs de la bande de contrôle
 base = (np.mean(zoi[0][:,:,0]), np.mean(zoi[0][:,:,1]), np.mean(zoi[0][:,:,2]))
