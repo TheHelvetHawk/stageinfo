@@ -27,5 +27,5 @@ est un brouillon pour appliquer un fit avec des facteurs de publication (pas fin
 
 
 
-PS : Pour utiliser la programmes via lignes de commandes, je ne sais pas encore comment ça marche du a des problèmes techniques. :confused:
-Une solution est d'utliser [JupyterLab](https://jupyter.org/try) pour exécuter le code.
+> Pour utiliser les programmes via lignes de commandes, il suffit d'éxécuter ‘python3 py_stage/jsonReader.py’ ou ‘python3 py_stage/weighting.py’ dans un terminal.
+> On peut aussi utliser [JupyterLab](https://jupyter.org/try) pour exécuter les Notebooks Jupyter.

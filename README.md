@@ -26,6 +26,5 @@ Is used as a testing file for integrating the publication's method with big tiff
 Is used a a testing file for applying a weighted fit following the publication (not finished)
 
 
-
-PS : For command-line usage of the programs, i can't know how it works at the moment due to technical issues.
-Though you can use [JupyterLab](https://jupyter.org/try) to execute it
+> For command-line usage of the programs, you can execute ‘python3 py_stage/jsonReader.py’ or ‘python3 py_stage/weighting.py’ in a terminal.
+> You can also use [JupyterLab](https://jupyter.org/try) to execute the Jupyter Notebooks.
