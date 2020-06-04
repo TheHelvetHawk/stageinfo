@@ -47,9 +47,10 @@ sumr = []
 sumg = []
 sumb = []
 for i in range(len(strips)):
-    sumr.append( 1/ np.sqrt((np.std(zoi[0][:,:,0]) / strips[i][0])**2 + ((np.std(zoi[0][:,:,0])*strips[0][0]) / (strips[i][0]**2))**2) )
-    sumg.append( 1/ np.sqrt((np.std(zoi[0][:,:,1]) / strips[i][1])**2 + ((np.std(zoi[0][:,:,1])*strips[0][1]) / (strips[i][1]**2))**2) )
-    sumb.append( 1/ np.sqrt((np.std(zoi[0][:,:,2]) / strips[i][2])**2 + ((np.std(zoi[0][:,:,2])*strips[0][2]) / (strips[i][2]**2))**2) )
+    # sum.append( 1/ racine(     ( sigma(1)        /       PV(i) )^2  +     (     sigma(i)     *      PV(1)   /        PV(i)^2   )^2   )
+    sumr.append( 1/ np.sqrt((np.std(zoi[0][:,:,0]) / strips[i][0])**2 + ((np.std(zoi[i][:,:,0])*strips[0][0]) / (strips[i][0]**2))**2) )
+    sumg.append( 1/ np.sqrt((np.std(zoi[0][:,:,1]) / strips[i][1])**2 + ((np.std(zoi[i][:,:,1])*strips[0][1]) / (strips[i][1]**2))**2) )
+    sumb.append( 1/ np.sqrt((np.std(zoi[0][:,:,2]) / strips[i][2])**2 + ((np.std(zoi[i][:,:,2])*strips[0][2]) / (strips[i][2]**2))**2) )
 
 # calcul des Ws pour chaque canal et chaque bande
 wsR = [e/sum(sumr) for e in sumr]
