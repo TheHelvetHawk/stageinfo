@@ -1,0 +1,15 @@
+{
+  "params" : {
+    "files"       : ["scan1.tif", "scan2.tif", "scan3.tif", "scan4.tif", "scan5.tif"],
+    "path"        : "../filmsCompresses24h/",
+    "doses"       : [799.7, 599.8, 399.9, 299.9, 199.9, 100.0, 50.4, 24.8],
+    "weiner"      : false,
+    "grey"        : false,
+    "streaks"     : true
+  },
+  "input_variables" : {
+    "ROIs" : [],
+    "n_forWeights" : 0.5,
+    "d_lin" : 1
+  }
+}

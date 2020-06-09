@@ -20,13 +20,17 @@ class Calibration:
         self.__image = img
 
     def get_image(self):
+        # getter for the calibration image
         return self.__image
 
     def display_hist(self, array, chan):
+        # affiche un histogramme d'un canal de couleur pour un array RGB
         fig, ax = plt.subplots(figsize=(8, 8))
         ax.hist(array.flat, color=chan, bins=256)
 
     def fitting(self, strips, dose_values):
+        # créé une courbe fittée d'étalonnage à partir des valeurs données
+
         # converting to optical density values
         dor = -np.log10(strips[:, 0]) # red curve
         dog = -np.log10(strips[:, 1]) # green curve
@@ -56,8 +60,8 @@ class Calibration:
 
 
     def program(self, dose_values):
+        # exécute un programme qui montre des informations pertinentes sur la calibration
 
-        # displays an histogram for each canal
         self.display_hist(self.get_image().get_array()[:,:,0].flatten(), 'red')
         self.display_hist(self.get_image().get_array()[:,:,1].flatten(), 'green')
         self.display_hist(self.get_image().get_array()[:,:,2].flatten(), 'blue') # doesn't display idk why
@@ -86,5 +90,5 @@ class Calibration:
 if __name__ == '__main__':
     files = ['scan1.tif', 'scan2.tif', 'scan3.tif', 'scan4.tif', 'scan5.tif']
     doses = [799.7, 599.8, 399.9, 299.9, 199.9, 100.0, 50.4, 24.8]
-    test = Calibration(Image3d(files, 'tif1/').get_2dImage())
+    test = Calibration(Image3d(files, '../filmsCompresses24h/').get_2dImage())
     test.program(doses)

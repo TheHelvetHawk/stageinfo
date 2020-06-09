@@ -31,11 +31,8 @@ def rgb2grey(rgb):
     formula = [luma, luma, luma]
     return np.array(formula)
 
-def correct_row(row):
-        arr = []
-        for i in range(9, len(row)-10):
-            arr.append(np.mean(row[i-9 : i+1]))
-        return np.array(arr)
+def get_AVGall(arr):
+    return np.mean(np.concatenate((arr[:10], arr[-10:])))
 
 
 
@@ -59,34 +56,54 @@ class Image:
             self.__array = fromArray / 65535.0
 
     def get_filename(self):
+        # permet d'obtenir le nom du fichier image origine (s'il existe)
         return self.__filename
 
     def get_array(self):
+        # getter pour l'array correspondant à l'image
         return self.__array
 
     def get_grey_array(self, arr):
+        # permet d'obtenir la version grise d'un array
         grey_array = []
         for i in range(len(arr)): # not optimized
             inter = []
             for j in range(len(arr[i])):
                 inter.append(rgb2grey(arr[i][j]))
             grey_array.append(np.array(inter))
-
         return np.array(grey_array)
 
     def wiener_filtered(self, arr):
         return wiener(arr)
 
+    def __correct_column(self, col):
+        # permet de corriger une colonne d'un array avec la méthode de streks correction
+        arr = []
+        start = np.mean(col[:10])
+        end = np.mean(col[-10:])
+        for i in range(10, len(col)-10):
+            arr.append(col[i] * get_AVGall(self.get_array()) / (((len(col) - i) / len(col)) * start + (i / len(col)) * end))
+        return np.concatenate((col[:10], np.array(arr), col[-10:]))
+
     def streaks_corrected(self, arr):
-        return np.apply_along_axis(correct_row, 1, arr)
+        # corrige un array en appliquant la streaks correction
+        return np.apply_along_axis(self.__correct_column, 0, arr)
 
     def get_width(self):
+        # getter pour la largeur de l'image
         return self.__width
 
     def get_height(self):
+        # getter pour la hauteur de l'image
         return self.__height
 
     def show(self, mode=''):
+        # affiche l'image avec le(s) modes désirés
+        # 'r' pour afficher l'image à l'envers
+        # 'w' pour que l'image soit passée à travers un filtre de Weiner
+        # 'g' pour afficher l'image en gris (avec les coefficients luma)
+        # 's' pour réaliser une streaks correction sur l'image
+
         array = self.get_array()
         dir = 'upper'
 
@@ -100,4 +117,5 @@ class Image:
         if 's' in mode:
             array = self.streaks_corrected(array)
 
+        array[array > 1] = 1.0
         plt.imshow(array, origin=dir)

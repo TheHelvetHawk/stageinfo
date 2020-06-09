@@ -11,19 +11,26 @@ from jsonReader import JsonReader
 
 
 
+# INPUT FILE PARAMETER #
+
+json_file = "../json/default2.json"
+
+
+
 # PROGRAM #
 
 j = JsonReader()
 
 # publication method for the two-step weighting process
-params = j.getInfo("default2.json")
-variables = j.getVariables("default2.json")
+params = j.getInfo(json_file)
+variables = j.getVariables(json_file)
 doses = params['doses'][::-1] # on inverse l'array de doses pour qu'il soit dans l'ordre croissant
 
 
 # calcul des Wd
 wd = [0]
 for i in range (1, len(doses)):
+    #         (   D(i) -  D(i-1)  )/  Dmax
     wd.append((doses[i]-doses[i-1])/doses[-1])
 print('wd :', wd)
 
@@ -33,7 +40,7 @@ arr = img1.get_2dImage().get_array()
 
 # initialisation des zones d'intérêt
 zoi = [] # all of the strips in increasing dose value order(the first one being the unirradiated one)
-rois = variables["ROIs"]
+rois = variables["ROIs"] # les régions d'intérêt ont été calculées à la main et sont indiquées dans le champ "ROIs" du fichier default2.json
 for e in rois:
     zoi.append(arr[e[0]:e[1], e[2]:e[3], :])
 

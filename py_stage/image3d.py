@@ -48,19 +48,23 @@ class Image3d:
         self.__arrays = arrays
 
     def get_2dImage(self):
+        # retourne l'image 2D correspondant à l'image médiane
         return Image(fromArray=get_med_img(self.get_array()))
 
     def get_width(self):
+        # getter pour la largeur de l'image
         return self.get_2dImage().get_width()
 
     def get_height(self):
+        # getter pour la hauteur de l'image
         return self.get_2dImage().get_height()
 
     def get_array(self):
+        # getter pour l'array correspondant à l'image 3D
         return self.__arrays
 
 
 if __name__ == '__main__':
     files = ['scan1.tif', 'scan2.tif', 'scan3.tif', 'scan4.tif', 'scan5.tif']
-    img3d = Image3d(files, 'tif1/')
+    img3d = Image3d(files, '../filmsCompresses24h/')
     img3d.get_2dImage().show('rs')

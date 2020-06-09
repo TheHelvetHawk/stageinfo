@@ -65,4 +65,4 @@ class JsonReader:
 
 if __name__ == '__main__':
     j = JsonReader()
-    j.calibrationFromFile("default.json")
+    j.calibrationFromFile("../json/default.json")
