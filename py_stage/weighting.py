@@ -67,9 +67,9 @@ wsB = [e/sum(sumb) for e in sumb]
 # calcul des Wc pour chaque  canal et chaque bande
 n = variables["n_forWeights"]
 #wc =  n * wd    + (n-1) * ws
-wcR = [(n*wd[i]) + ((n-1)*wsR[i]) for i in range(len(wd))]
-wcG = [(n*wd[i]) + ((n-1)*wsG[i]) for i in range(len(wd))]
-wcB = [(n*wd[i]) + ((n-1)*wsB[i]) for i in range(len(wd))]
+wcR = [(n*wd[i]) + ((1-n)*wsR[i]) for i in range(len(wd))]
+wcG = [(n*wd[i]) + ((1-n)*wsG[i]) for i in range(len(wd))]
+wcB = [(n*wd[i]) + ((1-n)*wsB[i]) for i in range(len(wd))]
 
 # valeurs de la bande de contrôle
 base = (np.mean(zoi[0][:,:,0]), np.mean(zoi[0][:,:,1]), np.mean(zoi[0][:,:,2]))
@@ -89,3 +89,5 @@ for i in range(len(zoi)):
 d_lin = variables["d_lin"]
 Dose = [(d_lin * e) for e in nPVrgb]
 print('\nDose :', Dose)
+Dose2 = [(65535.0 * e) for e in nPVrgb]
+print('\n65535 * Dose :', Dose2)
