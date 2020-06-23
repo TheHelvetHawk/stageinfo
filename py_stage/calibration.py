@@ -64,7 +64,8 @@ class Calibration:
 
         self.display_hist(self.get_image().get_array()[:,:,0].flatten(), 'red')
         self.display_hist(self.get_image().get_array()[:,:,1].flatten(), 'green')
-        self.display_hist(self.get_image().get_array()[:,:,2].flatten(), 'blue') # doesn't display idk why
+        self.display_hist(self.get_image().get_array()[:,:,2].flatten(), 'blue')
+        plt.show()
 
         self.get_image().show('r')
 
@@ -85,6 +86,8 @@ class Calibration:
         strips = np.array(strips) # contains the median color of each strip
 
         self.fitting(strips, dose_values)
+
+        plt.show()
 
 
 if __name__ == '__main__':

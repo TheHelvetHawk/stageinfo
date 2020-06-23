@@ -1,6 +1,9 @@
 # IMPORTS #
 
 import numpy as np
+import matplotlib.pyplot as plt
+from functools import reduce
+from sklearn.linear_model import LinearRegression
 
 
 
@@ -17,6 +20,18 @@ json_file = "../json/default2.json"
 
 
 
+# FUNCTIONS #
+
+def MLRcoeffs_numpy():
+    return np.linalg.lstsq(np.array([[nPVr[i], nPVg[i], nPVb[i]] for i in range(8)]), doses, rcond=None)[0]
+
+def MLRcoeffs_sklearn():
+    reg = LinearRegression(fit_intercept=False)
+    reg.fit(np.array([[nPVr[i], nPVg[i], nPVb[i]] for i in range(8)]), doses)
+    print('coefs r, g, b :', reg.coef_)
+
+
+
 # PROGRAM #
 
 j = JsonReader()
@@ -27,20 +42,13 @@ variables = j.getVariables(json_file)
 doses = params['doses'][::-1] # on inverse l'array de doses pour qu'il soit dans l'ordre croissant
 
 
-# calcul des Wd
-wd = [0]
-for i in range (1, len(doses)):
-    #         (   D(i) -  D(i-1)  )/  Dmax
-    wd.append((doses[i]-doses[i-1])/doses[-1])
-print('wd :', wd)
-
 img1 = Image3d(params['files'], params['path'])
-arr = img1.get_2dImage().get_array()
+img = img1.get_2dImage()
+arr = img.get_array()
 
-
-# initialisation des zones d'intérêt
+# initialisation des zones d'interet
 zoi = [] # all of the strips in increasing dose value order(the first one being the unirradiated one)
-rois = variables["ROIs"] # les régions d'intérêt ont été calculées à la main et sont indiquées dans le champ "ROIs" du fichier default2.json
+rois = variables["ROIs"] # les regions d'interet ont ete calculees a la main et sont indiquees dans le champ "ROIs" du fichier default2.json
 for e in rois:
     zoi.append(arr[e[0]:e[1], e[2]:e[3], :])
 
@@ -49,45 +57,36 @@ strips = []
 for i in range(len(zoi)):
     strips.append((np.mean(zoi[i][:,:,0]), np.mean(zoi[i][:,:,1]), np.mean(zoi[i][:,:,2])))
 
-# calcul du dénominateur pour l'équation de Ws (équation 6)
-sumr = []
-sumg = []
-sumb = []
-for i in range(len(strips)):
-    # sum.append( 1/ racine(     ( sigma(1)        /       PV(i) )^2  +     (     sigma(i)     *      PV(1)   /        PV(i)^2   )^2   )
-    sumr.append( 1/ np.sqrt((np.std(zoi[0][:,:,0]) / strips[i][0])**2 + ((np.std(zoi[i][:,:,0])*strips[0][0]) / (strips[i][0]**2))**2) )
-    sumg.append( 1/ np.sqrt((np.std(zoi[0][:,:,1]) / strips[i][1])**2 + ((np.std(zoi[i][:,:,1])*strips[0][1]) / (strips[i][1]**2))**2) )
-    sumb.append( 1/ np.sqrt((np.std(zoi[0][:,:,2]) / strips[i][2])**2 + ((np.std(zoi[i][:,:,2])*strips[0][2]) / (strips[i][2]**2))**2) )
-
-# calcul des Ws pour chaque canal et chaque bande
-wsR = [e/sum(sumr) for e in sumr]
-wsG = [e/sum(sumg) for e in sumg]
-wsB = [e/sum(sumb) for e in sumb]
-
-# calcul des Wc pour chaque  canal et chaque bande
-n = variables["n_forWeights"]
-#wc =  n * wd    + (n-1) * ws
-wcR = [(n*wd[i]) + ((1-n)*wsR[i]) for i in range(len(wd))]
-wcG = [(n*wd[i]) + ((1-n)*wsG[i]) for i in range(len(wd))]
-wcB = [(n*wd[i]) + ((1-n)*wsB[i]) for i in range(len(wd))]
-
-# valeurs de la bande de contrôle
+# valeurs de la bande de controle
 base = (np.mean(zoi[0][:,:,0]), np.mean(zoi[0][:,:,1]), np.mean(zoi[0][:,:,2]))
-print('\nblank filter :', base, '\n')
+
+# calcul des nPVr, nPVg et nPVb
+nPVr = []
+nPVg = []
+nPVb = []
+for i in range(len(zoi)):
+    nPVr.append(base[0]/strips[i][0] - 1)
+    nPVg.append(base[1]/strips[i][1] - 1)
+    nPVb.append(base[2]/strips[i][2] - 1)
 
 # calcul des nPVrgb
 nPVrgb = []
-for i in range(len(zoi)):
-    strips = (np.mean(zoi[i][:,:,0]), np.mean(zoi[i][:,:,1]), np.mean(zoi[i][:,:,2]))
-    nPVr = base[0]/strips[0] - 1
-    nPVg = base[1]/strips[1] - 1
-    nPVb = base[2]/strips[2] - 1
-    nPVrgb.append( wcR[i] * nPVr + wcG[i] * nPVg + wcB[i] * nPVb )
-    print(i, ') nPVrgb = r *', nPVr, '+ g *', nPVg, '+ b *', nPVb, '=', (wcR[i] * nPVr + wcG[i] * nPVg + wcB[i] * nPVb))
+coef = MLRcoeffs_numpy()
+for i in range(8):
+    nPVrgb.append(coef[0] * nPVr[i] + coef[1] * nPVg[i] + coef[2] * nPVb[i])
+    print(i, ') nPVrgb = r *', nPVr[i], '+ g *', nPVg[i], '+ b *', nPVb[i], '=', nPVrgb[i])
 
 # calcul de la dose avec le decay factor
 d_lin = variables["d_lin"]
 Dose = [(d_lin * e) for e in nPVrgb]
-print('\nDose :', Dose)
-Dose2 = [(65535.0 * e) for e in nPVrgb]
-print('\n65535 * Dose :', Dose2)
+print('\nCalculated dose values :', Dose)
+
+plt.figure('looks good but values are shit')
+arr2 = (-1) * reduce(np.add, [coef[0]*arr[:,:,0], coef[1]*arr[:,:,1], coef[2]*arr[:,:,2]])
+plt.imshow(arr2, origin='lower')
+
+plt.figure("values are good on the strips but background has weird values, maybe?")
+arr3 = reduce(np.add, [coef[0] * (base[0]/arr[:,:,0] - 1), coef[1] * (base[1]/arr[:,:,1] - 1), coef[2] * (base[2]/arr[:,:,2] - 1)])
+plt.imshow(arr3, origin='lower')
+
+plt.show()

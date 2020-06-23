@@ -59,9 +59,18 @@ class Image:
         # permet d'obtenir le nom du fichier image origine (s'il existe)
         return self.__filename
 
-    def get_array(self):
-        # getter pour l'array correspondant à l'image
-        return self.__array
+    def get_array(self, mode=''):
+        array = self.__array
+
+        if 'w' in mode:
+            array = self.wiener_filtered(array)
+        if 'g' in mode:
+            array = self.get_grey_array(array)
+        if 's' in mode:
+            array = self.streaks_corrected(array)
+            array[array > 1] = 1.0
+
+        return array
 
     def get_grey_array(self, arr):
         # permet d'obtenir la version grise d'un array
@@ -104,18 +113,28 @@ class Image:
         # 'g' pour afficher l'image en gris (avec les coefficients luma)
         # 's' pour réaliser une streaks correction sur l'image
 
-        array = self.get_array()
+        array = self.get_array(mode)
         dir = 'upper'
 
         if 'r' in mode:
             dir ='lower'
 
-        if 'w' in mode:
-            array = self.wiener_filtered(array)
-        if 'g' in mode:
-            array = self.get_grey_array(array)
-        if 's' in mode:
-            array = self.streaks_corrected(array)
-
-        array[array > 1] = 1.0
         plt.imshow(array, origin=dir)
+
+if __name__ == '__main__':
+    file = '../filmsCompresses24h/scan1.tif'
+    img = Image(file)
+
+    plt.figure('Image')
+    img.show('r')
+
+    #plt.figure('Weiner filtered Image')
+    #img.show('rw')
+
+    #plt.figure('Grey Image')
+    #img.show('rg')
+
+    #plt.figure('Streaks corrected Image')
+    #img.show('rs')
+
+    plt.show()
