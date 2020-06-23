@@ -9,21 +9,13 @@ Prend une image TIFF d'un filtre gafchromique et le convertit en dose d'irradiat
 concentration de dose.
 
 
-## EBT3_Calibration.ipynb
+## calibration.py
 Prend une liste d'images d'étalonnage TIFF (les photos doivent être très similaires ou prises en rafale, elles doivent être prises sur
-le même filtre), puis localise les zones d'interêt pour créer un graphique avec les densités optiques de chaque canal de couleurs.
+le même filtre), puis localise (pas vraiment) les zones d'interêt pour créer un graphique avec les densités optiques de chaque canal de couleurs.
 
 
-## EBT3_CalibrationWithFitting.ipynb
-Similaire à EBT3_Calibration.ipynb mais les courbes sont fittées (Version 2.0 de l'autre fichier)
-
-
-## TestingBigTiffImage.ipynb
-Est utilisé comme un brouillon/fichier de test pour appliquer la méthode de la publication et utilise des plus grandes images tiff
-
-
-## weightingProcessTest.ipynb
-est un brouillon pour appliquer un fit avec des facteurs de publication (pas fini)
+## weighting.py
+Permet d'estimer la dose absorbée par un filtre gafchromique directement à partir d'une série d'images
 
 
 
