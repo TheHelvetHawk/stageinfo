@@ -51,13 +51,14 @@ class JsonReader:
         s = params["streaks"]
 
         img = Image3d(files, path).get_2dImage()
-        arr = img.get_array()
+        mode = ''
         if w:
-            arr = img.wiener_filtered(arr)
+            mode += 'w'
         if g:
-            arr = img.get_grey_array(arr)
+            mode += 'g'
         if s:
-            arr = img.streaks_corrected(arr)
+            mode += 's'
+        arr = img.get_array(mode)
 
         cali = Calibration(Image(fromArray=arr*65535.0))
         cali.program(doses)

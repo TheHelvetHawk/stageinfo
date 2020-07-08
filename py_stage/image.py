@@ -34,6 +34,9 @@ def rgb2grey(rgb):
 def get_AVGall(arr):
     return np.mean(np.concatenate((arr[:10], arr[-10:])))
 
+def get_AVGall2(arr):
+    return np.mean(np.concatenate((arr[:, :10], arr[:, -10:])))
+
 
 
 # ACTUAL CLASS #
@@ -59,9 +62,21 @@ class Image:
         # permet d'obtenir le nom du fichier image origine (s'il existe)
         return self.__filename
 
-    def get_array(self):
-        # getter pour l'array correspondant à l'image
-        return self.__array
+    def get_array(self, mode=''):
+        array = self.__array
+
+        if 'w' in mode:
+            array = self.wiener_filtered(array)
+        if 'g' in mode:
+            array = self.get_grey_array(array)
+        if 's' in mode:
+            array = self.streaks_corrected(array)
+            array[array > 1] = 1.0
+        if 'z' in mode:
+            array = self.streaks_corrected(array)
+            array[array > 1] = 1.0
+
+        return array
 
     def get_grey_array(self, arr):
         # permet d'obtenir la version grise d'un array
@@ -77,17 +92,32 @@ class Image:
         return wiener(arr)
 
     def __correct_column(self, col):
-        # permet de corriger une colonne d'un array avec la méthode de streks correction
+        # permet de corriger une colonne d'un array avec la méthode de streaks correction
         arr = []
         start = np.mean(col[:10])
         end = np.mean(col[-10:])
-        for i in range(10, len(col)-10):
-            arr.append(col[i] * get_AVGall(self.get_array()) / (((len(col) - i) / len(col)) * start + (i / len(col)) * end))
+        height = len(col)
+        for i in range(10, height-10):
+            #arr.append(col[i] * get_AVGall(self.get_array()) / (((height - i) / height) * start + (i / height) * end))
+            arr.append(col[i] * get_AVGall(self.get_array()) / (start + (i / height) * (end - start)))
         return np.concatenate((col[:10], np.array(arr), col[-10:]))
+
+    def __correct_line(self, line):
+        # permet de corriger une ligne d'un array avec la méthode de streaks correction
+        arr = []
+        start = np.mean(line[:10])
+        end = np.mean(line[-10:])
+        for i in range(10, len(line)-10):
+            arr.append(line[i] * get_AVGall2(self.get_array()) / (((len(line) - i) / len(line)) * start + (i / len(line)) * end))
+        return np.concatenate((line[:10], np.array(arr), line[-10:]))
 
     def streaks_corrected(self, arr):
         # corrige un array en appliquant la streaks correction
         return np.apply_along_axis(self.__correct_column, 0, arr)
+
+    def streaks_corrected2(self, arr):
+        # corrige un array en appliquant la streaks correction
+        return np.apply_along_axis(self.__correct_line, 1, arr)
 
     def get_width(self):
         # getter pour la largeur de l'image
@@ -104,18 +134,31 @@ class Image:
         # 'g' pour afficher l'image en gris (avec les coefficients luma)
         # 's' pour réaliser une streaks correction sur l'image
 
-        array = self.get_array()
+        array = self.get_array(mode)
         dir = 'upper'
 
         if 'r' in mode:
             dir ='lower'
 
-        if 'w' in mode:
-            array = self.wiener_filtered(array)
-        if 'g' in mode:
-            array = self.get_grey_array(array)
-        if 's' in mode:
-            array = self.streaks_corrected(array)
-
-        array[array > 1] = 1.0
         plt.imshow(array, origin=dir)
+
+if __name__ == '__main__':
+    file = '../filmsCompresses24h/scan1.tif'
+    img = Image(file)
+
+    plt.figure('Image')
+    img.show('r')
+
+    #plt.figure('Weiner filtered Image')
+    #img.show('rw')
+
+    #plt.figure('Grey Image')
+    #img.show('rg')
+
+    plt.figure('Streaks corrected Image')
+    img.show('rs')
+
+    plt.figure('Streaks corrected Image 2')
+    img.show('rz')
+
+    plt.show()

@@ -2,6 +2,7 @@
 
 import numpy as np
 import SimpleITK
+import matplotlib.pyplot as plt
 
 
 
@@ -67,4 +68,12 @@ class Image3d:
 if __name__ == '__main__':
     files = ['scan1.tif', 'scan2.tif', 'scan3.tif', 'scan4.tif', 'scan5.tif']
     img3d = Image3d(files, '../filmsCompresses24h/')
-    img3d.get_2dImage().show('rs')
+    medimg = img3d.get_2dImage()
+
+    plt.figure('Median image')
+    medimg.show('r')
+
+    plt.figure('Median image with streaks correction')
+    medimg.show('rs')
+
+    plt.show()

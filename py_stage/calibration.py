@@ -25,7 +25,7 @@ class Calibration:
 
     def display_hist(self, array, chan):
         # affiche un histogramme d'un canal de couleur pour un array RGB
-        fig, ax = plt.subplots(figsize=(8, 8))
+        fig, ax = plt.subplots(num=chan+' channel histogram', figsize=(8, 8))
         ax.hist(array.flat, color=chan, bins=256)
 
     def fitting(self, strips, dose_values):
@@ -37,9 +37,9 @@ class Calibration:
         dob = -np.log10(strips[:, 2]) # blue curve
         rsb = dor / dob # black curve
 
-        legend_list = [(rsb, 'k', 'ratio red/blue ODs'), (dor, 'r', 'red optical density'), (dog, 'g', 'green optical density'), (dob, 'b', 'blue optical density')]
+        legend_list = [(dor, 'r', 'red optical density'), (dog, 'g', 'green optical density'), (dob, 'b', 'blue optical density'), (rsb, 'k', 'ratio red/blue ODs')]
 
-        fig, ax = plt.subplots(figsize=(13, 15))
+        fig, ax = plt.subplots(num='fitted curve of optical densities', figsize=(10, 10))
         for e in legend_list: # fitting the curves
             # calculates natural cubic spline polynomials
             x = e[0]
@@ -64,7 +64,8 @@ class Calibration:
 
         self.display_hist(self.get_image().get_array()[:,:,0].flatten(), 'red')
         self.display_hist(self.get_image().get_array()[:,:,1].flatten(), 'green')
-        self.display_hist(self.get_image().get_array()[:,:,2].flatten(), 'blue') # doesn't display idk why
+        self.display_hist(self.get_image().get_array()[:,:,2].flatten(), 'blue')
+        plt.show()
 
         self.get_image().show('r')
 
@@ -85,6 +86,8 @@ class Calibration:
         strips = np.array(strips) # contains the median color of each strip
 
         self.fitting(strips, dose_values)
+
+        plt.show()
 
 
 if __name__ == '__main__':
