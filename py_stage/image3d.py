@@ -1,7 +1,7 @@
 # IMPORTS #
 
 import numpy as np
-import SimpleITK
+import SimpleITK as sitk
 import matplotlib.pyplot as plt
 
 
@@ -44,13 +44,18 @@ class Image3d:
     def __init__(self, fns, path=''):
         arrays = []
         for i in range(len(fns)):
-            img = SimpleITK.ReadImage(path + fns[i])
-            arrays.append(SimpleITK.GetArrayFromImage(img))
+            img = sitk.ReadImage(path + fns[i])
+            arrays.append(sitk.GetArrayFromImage(img))
         self.__arrays = arrays
+        self.info = [img.GetSize(), img.GetSpacing(), img.GetOrigin(), img]
 
     def get_2dImage(self):
         # retourne l'image 2D correspondant à l'image médiane
-        return Image(fromArray=get_med_img(self.get_array()))
+        imagetif = sitk.GetImageFromArray(get_med_img(self.get_array()).astype('uint16'), isVector=True)
+        #imagetif.SetSpacing(self.info[1])
+        #imagetif.SetOrigin(self.info[2])
+        imagetif.CopyInformation(self.info[3])
+        return Image(fromITK=imagetif)
 
     def get_width(self):
         # getter pour la largeur de l'image
@@ -73,7 +78,7 @@ if __name__ == '__main__':
     plt.figure('Median image')
     medimg.show('r')
 
-    plt.figure('Median image with streaks correction')
-    medimg.show('rs')
+    #plt.figure('Median image with streaks correction')
+    #medimg.show('rs')
 
     plt.show()

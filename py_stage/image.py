@@ -2,7 +2,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import SimpleITK
+import SimpleITK as sitk
 from scipy.signal import wiener
 
 
@@ -43,20 +43,32 @@ def get_AVGall2(arr):
 
 class Image:
 
-    def __init__(self, fn='', fromArray=np.array([])):
-        assert fn or fromArray.ndim>=2, "Image must take a filename or a numpy array as a parameter"
+    def __init__(self, fn='', fromArray=np.array([]), fromITK=None):
+        assert fn or fromArray.ndim>=2 or fromITK, "Image must take a filename or a numpy array as a parameter"
         if fn:
-            img = SimpleITK.ReadImage(fn)
+            img = sitk.ReadImage(fn)
             self.__filename = fn
             self.__width = img.GetWidth()
             self.__height = img.GetHeight()
-            self.__array = SimpleITK.GetArrayFromImage(img)
+            self.__array = sitk.GetArrayFromImage(img)
             self.__array = self.__array / 65535.0
-        else:
+        elif fromArray.ndim>=2:
             self.__filename = None
+            self.__img = sitk.GetImageFromArray(fromArray.astype('uint16'), isVector=True)
             self.__width = fromArray.shape[1]
             self.__height = fromArray.shape[0]
             self.__array = fromArray / 65535.0
+        else:
+            self.__img = fromITK
+            self.__width = self.__img.GetWidth()
+            self.__height = self.__img.GetHeight()
+            self.__array = sitk.GetArrayFromImage(self.__img)
+            self.__array = self.__array / 65535.0
+
+
+    def get_image(self):
+        # permet d'obtenir l'image SimpleITK correspondante
+        return self.__img
 
     def get_filename(self):
         # permet d'obtenir le nom du fichier image origine (s'il existe)
@@ -155,10 +167,10 @@ if __name__ == '__main__':
     #plt.figure('Grey Image')
     #img.show('rg')
 
-    plt.figure('Streaks corrected Image')
-    img.show('rs')
+    #plt.figure('Streaks corrected Image')
+    #img.show('rs')
 
-    plt.figure('Streaks corrected Image 2')
-    img.show('rz')
+    #plt.figure('Streaks corrected Image 2')
+    #img.show('rz')
 
     plt.show()
