@@ -20,10 +20,10 @@ from jsonReader import JsonReader
 # INPUT FILE PARAMETER + other parameters #
 
 json_file = "../json/default2.json"
-display_images = False
+display_images = True
 display_graph = True
-display_formulas = False
-display_fingerprint_debug = False
+display_formulas = True
+display_fingerprint_debug = True
 save_images = False
 
 

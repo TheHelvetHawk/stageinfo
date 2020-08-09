@@ -9,7 +9,6 @@
   },
   "input_variables" : {
     "ROIs" : [],
-    "n_forWeights" : 0.5,
     "d_lin" : 1
   }
 }

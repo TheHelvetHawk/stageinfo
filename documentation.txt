@@ -1,0 +1,117 @@
+-----------------------------------------------------
+Hugo Sirard
+Stage au Service de Physique du Centre Oscar Lambret
+08/04/2020 - 10/07/2020
+-----------------------------------------------------
+
+Documentation des programmes crées
+
+
+
+# image.py #
+------------
+Création / Gestion d'une image
+
+Il y a 3 façons de créer un objet Image : à partir d'un fichier image (préférablement un fichier TIFF), à partir d'un array numpy ou bien à partir d'une image de SimpleITK directement
+Pour créer l'image, il faut écrire respectivement : Image(fn="nomdufichier.tif"), Image(fromArray=nomdelarray) et Image(fromITK=nomdelimageITK)
+
+On peut aussi obtenir l'array de l'image modifié selon nos préférences avec la méthode get_array()
+En effet, on peut utiliser les modes suivants :
+    - 'w' pour que l'image soit passée à travers un filtre de Weiner
+    - 'g' pour afficher l'image en gris (avec les coefficients luma)
+    - 's' pour réaliser une streaks correction sur l'image
+Pour activer ces modes, il suffit de concaténer les differents modes ; par exemple get_array('gs') renverra la version grise de l'array corrigée par la méthode de streaks correction
+
+De la même façon on peut afficher l'image avec le(s) mode(s) désiré(s) avec la méthode show()
+
+Exécuter ce fichier directement affichera une image et sa version corrigée avec la streaks correction
+
+
+
+# image3d.py #
+--------------
+Création / Gestion d'un array d'images
+
+Pour créer un objet Image3d, il faut la liste des noms des fichiers images et éventuellement le chemin du dossier contenant les images
+L'objet se crée en écrivant Image3d(["fichier1.tif", "fichier2.tif"...], "dossier/")
+
+L'objectif principal de cette classe est d'obtenir une image médiane de l'array d'images
+On peut obtenir cette image médiane avec la méthode get_2dImage()
+
+Exécuter ce fichier directement affichera une image médiane
+
+
+
+# calibration.py #
+------------------
+Processus d'étalonnage à partir d'un array d'images
+
+Pour faire un étalonnage (et donc créer un objet Calibration), il faut passer une image en paramètre (généralement une image médiane générée par la classe Image3d)
+L'objet se crée en écrivant Calibration("image.tif")
+
+L'utilisation de cette classe peut se résumer à sa méthode program() qui lorsque qu'on lui passe une liste de 8 doses en paramètre, réalise une suite d'instructions qui nous donne des informations sur l'étalonnage que l'on réalise
+
+Exécuter ce fichier directement réalisera un étalonnage sur une image médiane générée auparavant
+
+
+
+/!\ La plupart des programmes développées par la suite utiliseront des fichiers JSON, la forme correcte d'un fichier JSON sera décrite à la fin de ce fichier
+
+# jsonReader.py #
+-----------------
+Extraction d'informations à partir de fichiers JSON
+
+Pour créer un objet JsonReader, il faut écrire JsonReader()
+
+Pour récupérer les informations d'un fichier JSON, il y a la méthode getInfo("fichier.json") ; et pour les variables d'initialisation, il y a la méthode getVariables("fichier.json")
+
+On peut aussi effectuer un étalonnage à partir d'un fichier JSON dans cette classe, avec la méthode calibrationFromFile("fichier.json")
+
+Exécuter ce fichier directement réalisera un étalonnage à partir d'un fichier JSON
+
+
+
+# fingerprint.py # (juste un script, pas une classe)
+------------------
+Tests pour appliquer la fingerprint correction
+
+C'est un script qui affiche un graphique les courbes fittées correspondant aux valeurs de cR_meas, cG_meas et cB_meas
+
+
+
+# weighting.py # (juste un script, pas une classe)
+----------------
+Calcul des nPVrgb + Calcul de prévision des doses + Fingerprint correction (pas fini)
+
+Comme écrit juste au-dessus, ce script calcul les valeurs de doses et fait une fingerprint correction incomplète pour le moment
+Pour plus de détails sur ce programme, je vous invite à consulter directement le fichier pour une documentation plus intégrée au code
+
+
+
+# Format des fichiers JSON #
+----------------------------
+
+{
+  "params" : {
+    "files"       : ["bscan1.tif", "bscan2.tif"],
+    "path"        : "../etalonnageBig/",
+    "doses"       : [800, 500, 300, 250, 200, 150, 100, 0],
+    "weiner"      : false,
+    "grey"        : false,
+    "streaks"     : false
+  },
+  "input_variables" : {
+    "ROIs" : [[2850,3050,750,1550], [2500,2700,750,1550], [2100,2300,750,1550], [1700,1900,750,1550], [1350,1550,750,1550], [1000,1200,750,1550], [650,850,750,1550], [300,500,750,1550]],
+    "d_lin" : 1
+  }
+}
+
+files   : série d'images à analyser
+path    : dossier où sont situées les images
+doses   : liste des doses associées aux images
+weiner  : true s'il faut faire passer l'image à travers un filtre de Weiner, false sinon
+grey    : true si on veut la version luma (grise) de notre image, false sinon
+streaks : true si l'on veut effectuer une streaks correction sur l'image, false sinon
+ROIs    : liste des régions d'intérêt (à défaut d'avoir un moyen de les trouver directement)
+          chaque région est décrite comme tel : [début_y, fin_y, début_x, fin_x] avec y représentant l'axe des ordonnées et x l'axe des abscisses
+d_lin   : decay factor du filtre gafchromique photographié

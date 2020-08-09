@@ -34,9 +34,6 @@ def rgb2grey(rgb):
 def get_AVGall(arr):
     return np.mean(np.concatenate((arr[:10], arr[-10:])))
 
-def get_AVGall2(arr):
-    return np.mean(np.concatenate((arr[:, :10], arr[:, -10:])))
-
 
 
 # ACTUAL CLASS #
@@ -44,7 +41,7 @@ def get_AVGall2(arr):
 class Image:
 
     def __init__(self, fn='', fromArray=np.array([]), fromITK=None):
-        assert fn or fromArray.ndim>=2 or fromITK, "Image must take a filename or a numpy array as a parameter"
+        assert fn or fromArray.ndim>=2 or fromITK, "Image must take a filename, a numpy array or a SipleITK image as a parameter"
         if fn:
             img = sitk.ReadImage(fn)
             self.__filename = fn
@@ -64,6 +61,7 @@ class Image:
             self.__height = self.__img.GetHeight()
             self.__array = sitk.GetArrayFromImage(self.__img)
             self.__array = self.__array / 65535.0
+        self.__avgborders = get_AVGall(self.__array)
 
 
     def get_image(self):
@@ -74,6 +72,9 @@ class Image:
         # permet d'obtenir le nom du fichier image origine (s'il existe)
         return self.__filename
 
+    def get_avgborders(self):
+        return self.__avgborders
+
     def get_array(self, mode=''):
         array = self.__array
 
@@ -82,9 +83,6 @@ class Image:
         if 'g' in mode:
             array = self.get_grey_array(array)
         if 's' in mode:
-            array = self.streaks_corrected(array)
-            array[array > 1] = 1.0
-        if 'z' in mode:
             array = self.streaks_corrected(array)
             array[array > 1] = 1.0
 
@@ -111,25 +109,12 @@ class Image:
         height = len(col)
         for i in range(10, height-10):
             #arr.append(col[i] * get_AVGall(self.get_array()) / (((height - i) / height) * start + (i / height) * end))
-            arr.append(col[i] * get_AVGall(self.get_array()) / (start + (i / height) * (end - start)))
+            arr.append(col[i] * self.get_avgborders() / (start + (i / height) * (end - start)))
         return np.concatenate((col[:10], np.array(arr), col[-10:]))
-
-    def __correct_line(self, line):
-        # permet de corriger une ligne d'un array avec la méthode de streaks correction
-        arr = []
-        start = np.mean(line[:10])
-        end = np.mean(line[-10:])
-        for i in range(10, len(line)-10):
-            arr.append(line[i] * get_AVGall2(self.get_array()) / (((len(line) - i) / len(line)) * start + (i / len(line)) * end))
-        return np.concatenate((line[:10], np.array(arr), line[-10:]))
 
     def streaks_corrected(self, arr):
         # corrige un array en appliquant la streaks correction
         return np.apply_along_axis(self.__correct_column, 0, arr)
-
-    def streaks_corrected2(self, arr):
-        # corrige un array en appliquant la streaks correction
-        return np.apply_along_axis(self.__correct_line, 1, arr)
 
     def get_width(self):
         # getter pour la largeur de l'image
@@ -167,10 +152,7 @@ if __name__ == '__main__':
     #plt.figure('Grey Image')
     #img.show('rg')
 
-    #plt.figure('Streaks corrected Image')
-    #img.show('rs')
-
-    #plt.figure('Streaks corrected Image 2')
-    #img.show('rz')
+    plt.figure('Streaks corrected Image')
+    img.show('rs')
 
     plt.show()

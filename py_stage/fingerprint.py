@@ -21,12 +21,6 @@ json_file = "../json/default2.json"
 
 
 
-# FUNCTIONS #
-
-#a
-
-
-
 # PROGRAM #
 
 j = JsonReader()
